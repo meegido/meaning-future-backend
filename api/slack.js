@@ -1,4 +1,5 @@
-export function POST(request) {
-  console.log(request)
-  return new Response(`Hello from ${process.env.VERCEL_REGION}`);
+export default async function handler(req, res) {
+  const { body } = req;
+  console.log(body)
+  return res.send(body.challenge);
 }
