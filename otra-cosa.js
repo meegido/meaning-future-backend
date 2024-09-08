@@ -1,6 +1,6 @@
-const { App } = require("@slack/bolt");
-const { initializeApp, cert } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
+const {App} = require("@slack/bolt");
+const {initializeApp, cert} = require("firebase-admin/app");
+const {getFirestore} = require("firebase-admin/firestore");
 const serviceAccount = require("./serviceAccountKey.json");
 require("dotenv").config();
 
@@ -9,7 +9,7 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   appToken: process.env.SLACK_APP_TOKEN,
   socketMode: true,
-  //logLevel: LogLevel.DEBUG,
+  // logLevel: LogLevel.DEBUG,
 });
 
 initializeApp({
@@ -17,10 +17,11 @@ initializeApp({
 });
 
 const db = getFirestore();
-db.settings({ ignoreUndefinedProperties: true });
+db.settings({ignoreUndefinedProperties: true});
 
 const CHANNEL_ID = "C07DL65JULV";
 
+// eslint-disable-next-line require-jsdoc
 async function fetchMessage() {
   try {
     const result = await app.client.conversations.history({
@@ -59,7 +60,7 @@ const writeDocument = async (message) => {
   }
 };
 
-app.event("message", async ({ event, say, client }) => {
+app.event("message", async ({event, say, client}) => {
   if (event.subtype === "message_changed") {
     const message = await fetchMessage();
     await writeDocument(message);
