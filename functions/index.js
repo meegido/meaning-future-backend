@@ -3,7 +3,7 @@ const {getFirestore} = require("firebase-admin/firestore");
 const {initializeApp, cert} = require("firebase-admin/app");
 const serviceAccount = require("./serviceAccountKey.json");
 const { onRequest } = require("firebase-functions/v2/https");
-const {askQuestion} = require("./perplexity");
+const OpenAI = require("openai");
 require("dotenv").config()
 
 const expressReceiver = new ExpressReceiver({
@@ -25,12 +25,25 @@ initializeApp({
  });
 
 
-// Global error handler
-app.error(console.log);
+app.error(console.error);
 
 const CHANNEL_ID = "C07DL65JULV";
 const db = getFirestore();
 db.settings({ignoreUndefinedProperties: true});
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: "https://api.perplexity.ai"
+});
+
+async function askQuestion(url) {
+    const stream = await client.chat.completions.create({
+        model: "llama-3.1-sonar-large-128k-online",
+        messages: [{ role: "user", content: `Give me a summary of this website: ${url}` }],
+    });
+
+    return stream.choices[0].message.content;
+}
 
 async function fetchMessage() {
   try {
@@ -41,11 +54,11 @@ async function fetchMessage() {
       limit: 1,
     });
 
-    // There should only be one result (stored in the zeroth index)
     const message = result.messages[0].attachments[0];
-    message.perplexitySummary = await askQuestion(message.from_url);
-    console.log(message, "---MESSAGE IN FETCH -----");
-    return message;
+    const perplexitySummary = await askQuestion(message.from_url);
+    const ramon = { ...message, perplexitySummary: perplexitySummary, timestamp:  Date.now() };
+    console.info(message, "---MESSAGE IN FETCH -----");
+    return ramon;
   } catch (error) {
     console.error(error);
   }
@@ -55,7 +68,7 @@ const writeDocument = async (message) => {
   if (!message) return;
 
   const document = db.collection("links").doc();
-
+  console.info(message, "---MESSAGE IN WRITE DOCUMENT -----");
   try {
     const callSet = await document.set({
       url: message.from_url,
@@ -64,7 +77,8 @@ const writeDocument = async (message) => {
       title: message.title,
       text: message.text,
       imageUrl: message.image_url,
-      perplexitySummary: message.perplexity_summary,
+      perplexitySummary: message.perplexitySummary,
+      timestamp: message.timestamp,
     });
     console.log(callSet, "---CALL SET ---");
   } catch (error) {
@@ -73,6 +87,7 @@ const writeDocument = async (message) => {
 };
 
 app.event("message", async ({event}) => {
+  console.info(event, "---EVENT IN MESSAGE -----");
   if (event.subtype === "message_changed") {
     const message = await fetchMessage();
     await writeDocument(message);
