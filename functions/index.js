@@ -3,6 +3,7 @@ const {getFirestore} = require("firebase-admin/firestore");
 const {initializeApp, cert} = require("firebase-admin/app");
 const serviceAccount = require("./serviceAccountKey.json");
 const { onRequest } = require("firebase-functions/v2/https");
+const {askQuestion} = require("./perplexity");
 require("dotenv").config()
 
 const expressReceiver = new ExpressReceiver({
@@ -23,7 +24,7 @@ initializeApp({
    credential: cert(serviceAccount),
  });
 
- 
+
 // Global error handler
 app.error(console.log);
 
@@ -42,6 +43,7 @@ async function fetchMessage() {
 
     // There should only be one result (stored in the zeroth index)
     const message = result.messages[0].attachments[0];
+    message.perplexitySummary = await askQuestion(message.from_url);
     console.log(message, "---MESSAGE IN FETCH -----");
     return message;
   } catch (error) {
@@ -62,6 +64,7 @@ const writeDocument = async (message) => {
       title: message.title,
       text: message.text,
       imageUrl: message.image_url,
+      perplexitySummary: message.perplexity_summary,
     });
     console.log(callSet, "---CALL SET ---");
   } catch (error) {
