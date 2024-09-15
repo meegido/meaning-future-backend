@@ -4,13 +4,27 @@ const {initializeApp, cert} = require("firebase-admin/app");
 const serviceAccount = require("./serviceAccountKey.json");
 const { onRequest } = require("firebase-functions/v2/https");
 const OpenAI = require("openai");
+const Sentry = require("@sentry/node");
+const {nodeProfilingIntegration} = require("@sentry/profiling-node");
 require("dotenv").config()
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [
+    nodeProfilingIntegration(),
+  ],
+  tracesSampleRate: 1.0,
+  profilesSampleRate: 1.0,
+});
+
+
 
 const expressReceiver = new ExpressReceiver({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   endpoints: "/events",
   processBeforeResponse: true,
 });
+
 const app = new App({
   receiver: expressReceiver,
   token: process.env.SLACK_BOT_TOKEN,
@@ -18,6 +32,9 @@ const app = new App({
   appToken: process.env.SLACK_APP_TOKEN,
   port: 8080,
 });
+
+
+Sentry.setupExpressErrorHandler(expressReceiver.app);
 
 
 initializeApp({
@@ -81,6 +98,7 @@ const writeDocument = async (message) => {
       timestamp: message.timestamp,
     });
     console.log(callSet, "---CALL SET ---");
+    throw new Error("My first Sentry error!");
   } catch (error) {
     console.error(error);
   }
