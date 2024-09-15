@@ -1,11 +1,11 @@
+require("./instrument");
 const {App, ExpressReceiver} = require("@slack/bolt");
 const {getFirestore} = require("firebase-admin/firestore");
 const {initializeApp, cert} = require("firebase-admin/app");
 const serviceAccount = require("./serviceAccountKey.json");
 const { onRequest } = require("firebase-functions/v2/https");
 const OpenAI = require("openai");
-const Sentry = require("@sentry/google-cloud-serverless");
-const {nodeProfilingIntegration} = require("@sentry/profiling-node");
+const Sentry = require("@sentry/node");
 require("dotenv").config()
 
 const expressReceiver = new ExpressReceiver({
@@ -21,18 +21,6 @@ const app = new App({
   appToken: process.env.SLACK_APP_TOKEN,
   port: 8080,
 });
-
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  integrations: [
-    nodeProfilingIntegration(),
-  ],
-  tracesSampleRate: 1.0,
-  profilesSampleRate: 1.0,
-});
-
-Sentry.setupExpressErrorHandler(expressReceiver.app);
-
 
 initializeApp({
    credential: cert(serviceAccount),
@@ -94,19 +82,18 @@ const writeDocument = async (message) => {
       timestamp: message.timestamp,
     });
     console.log(callSet, "---CALL SET ---");
-    throw new Error("My first Sentry error!");
+    Sentry.captureMessage("Document written to Firestore");
 };
 
 app.event("message", async ({event}) => {
   console.info(event, "---EVENT IN MESSAGE -----");
   if (event.subtype === "message_changed") {
-
-    const message = await Sentry.startSpan({name: "fetchMessage"}, async () => {
-      return await fetchMessage();
-    });
+    const message = await fetchMessage();
 
     await writeDocument(message);
   }
 });
+
+Sentry.setupExpressErrorHandler(expressReceiver.app);
 
 exports.slack = onRequest(expressReceiver.app);

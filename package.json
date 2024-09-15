@@ -2,7 +2,8 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.10.0",
-    "globals": "^15.9.0"
+    "globals": "^15.9.0",
+    "vitest": "^2.1.1"
   },
   "dependencies": {
     "@slack/bolt": "^3.21.2",
