@@ -133,3 +133,4 @@ dist
 serviceAccountKey.json
 
 .idea
+functions/lib
