@@ -8,17 +8,6 @@ const Sentry = require("@sentry/google-cloud-serverless");
 const {nodeProfilingIntegration} = require("@sentry/profiling-node");
 require("dotenv").config()
 
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  integrations: [
-    nodeProfilingIntegration(),
-  ],
-  tracesSampleRate: 1.0,
-  profilesSampleRate: 1.0,
-});
-
-
-
 const expressReceiver = new ExpressReceiver({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   endpoints: "/events",
@@ -33,6 +22,14 @@ const app = new App({
   port: 8080,
 });
 
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [
+    nodeProfilingIntegration(),
+  ],
+  tracesSampleRate: 1.0,
+  profilesSampleRate: 1.0,
+});
 
 Sentry.setupExpressErrorHandler(expressReceiver.app);
 
