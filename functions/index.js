@@ -4,7 +4,7 @@ const {initializeApp, cert} = require("firebase-admin/app");
 const serviceAccount = require("./serviceAccountKey.json");
 const { onRequest } = require("firebase-functions/v2/https");
 const OpenAI = require("openai");
-const Sentry = require("@sentry/node");
+const Sentry = require("@sentry/google-cloud-serverless");
 const {nodeProfilingIntegration} = require("@sentry/profiling-node");
 require("dotenv").config()
 
@@ -86,7 +86,6 @@ const writeDocument = async (message) => {
 
   const document = db.collection("links").doc();
   console.info(message, "---MESSAGE IN WRITE DOCUMENT -----");
-  try {
     const callSet = await document.set({
       url: message.from_url,
       serviceIcon: message.service_icon,
@@ -99,15 +98,16 @@ const writeDocument = async (message) => {
     });
     console.log(callSet, "---CALL SET ---");
     throw new Error("My first Sentry error!");
-  } catch (error) {
-    console.error(error);
-  }
 };
 
 app.event("message", async ({event}) => {
   console.info(event, "---EVENT IN MESSAGE -----");
   if (event.subtype === "message_changed") {
-    const message = await fetchMessage();
+
+    const message = await Sentry.startSpan({name: "fetchMessage"}, async () => {
+      return await fetchMessage();
+    });
+
     await writeDocument(message);
   }
 });
