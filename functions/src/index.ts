@@ -55,7 +55,7 @@ async function askQuestion(url: string | undefined) {
     return stream.choices[0].message.content!;
 }
 
-async function fetchMessage() {
+async function fetchMessage(): Promise<LinkContent> {
     const result = await app.client.conversations.history({
       token: process.env.SLACK_BOT_TOKEN,
       channel: CHANNEL_ID,
