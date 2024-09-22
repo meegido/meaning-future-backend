@@ -1,8 +1,8 @@
-import "./instrument";
+//import "./instrument";
 import { App, ExpressReceiver } from "@slack/bolt";
 import { getFirestore } from "firebase-admin/firestore";
 import {initializeApp, cert, ServiceAccount} from "firebase-admin/app";
-import serviceAccount from "./serviceAccountKey.json";
+import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 import { onRequest } from "firebase-functions/v2/https";
 import OpenAI from "openai";
 import * as Sentry from "@sentry/node";
