@@ -28,6 +28,9 @@ export default [{
 
         parser: tsParser,
     },
+    rules: {
+        "@typescript-eslint/no-require-imports": "off"
+    },
 }, {
     files: ["**/*.spec.*"],
 
@@ -37,5 +40,7 @@ export default [{
         },
     },
 
-    rules: {},
+    rules: {
+        "@typescript-eslint/no-require-imports": "off"
+    },
 }];

@@ -1,6 +1,5 @@
 {
   "name": "functions",
-  "type": "module",
   "scripts": {
     "lint": "eslint .",
     "build": "npm run lint && tsc",

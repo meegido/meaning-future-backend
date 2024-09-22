@@ -1,20 +1,24 @@
-//import "./instrument";
-import { App, ExpressReceiver } from "@slack/bolt";
-import { getFirestore } from "firebase-admin/firestore";
-import {initializeApp, cert, ServiceAccount} from "firebase-admin/app";
-import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
-import { onRequest } from "firebase-functions/v2/https";
-import OpenAI from "openai";
-import * as Sentry from "@sentry/node";
-import dotenv from "dotenv";
-import { Attachment } from "@slack/web-api/dist/response/ConversationsHistoryResponse";
+const { getFirestore } = require("firebase-admin/firestore");
+const { initializeApp, cert } = require("firebase-admin/app");
+const serviceAccount = require("./serviceAccountKey.json");
+const { onRequest } = require("firebase-functions/v2/https");
+const OpenAI = require("openai");
+const Sentry = require("@sentry/node");
+const dotenv = require("dotenv");
+const { App, ExpressReceiver } = require("@slack/bolt");
 
 
 dotenv.config();
 
-interface LinkContent extends Attachment {
-perplexitySummary: string,
-timestamp: number,
+interface LinkContent {
+  from_url: string;
+  service_icon: string;
+  service_name: string;
+  title: string;
+  text: string;
+  image_url: string;
+  perplexitySummary: string;
+  timestamp: number;
 }
 
 
@@ -33,7 +37,7 @@ const app = new App({
 });
 
 initializeApp({
-   credential: cert(serviceAccount as ServiceAccount),
+   credential: cert(serviceAccount),
  });
 
 
@@ -89,6 +93,7 @@ const writeDocument = async (link: LinkContent) => {
     Sentry.captureMessage("Document written to Firestore");
 };
 
+// @ts-expect-error unknown function
 app.event("message", async ({event}) => {
   console.info(event, "---EVENT IN MESSAGE -----");
   if (event.subtype === "message_changed") {
