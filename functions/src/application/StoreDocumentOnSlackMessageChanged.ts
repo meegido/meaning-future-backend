@@ -2,7 +2,7 @@ import { LinksRepository } from '../domain/LinksRepository';
 import { MessageRepository } from '../domain/MessageRepository';
 import { SummaryRepository } from '../domain/SummaryRepository';
 
-class StoreLinkOnMessageShared {
+export class StoreLinkOnMessageShared {
   constructor(
     private readonly linksRepository: LinksRepository,
     private readonly messageRepository: MessageRepository,
@@ -15,5 +15,3 @@ class StoreLinkOnMessageShared {
     await this.linksRepository.saveLink({ ...linkContent, perplexitySummary: summary });
   }
 }
-
-module.exports = StoreLinkOnMessageShared;

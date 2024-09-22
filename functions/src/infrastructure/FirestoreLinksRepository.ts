@@ -1,13 +1,10 @@
 import { LinksRepository } from '../domain/LinksRepository';
-import { getFirestore } from 'firebase-admin/lib/firestore';
 import { LinkContent } from '../domain/types';
 
-class FirestoreLinksRepository implements LinksRepository {
+export class FirestoreLinksRepository implements LinksRepository {
   private db: FirebaseFirestore.Firestore;
-
-  constructor() {
-    this.db = getFirestore();
-    this.db.settings({ ignoreUndefinedProperties: true });
+  constructor(db: FirebaseFirestore.Firestore) {
+    this.db = db;
   }
 
   async saveLink(linkContent: LinkContent): Promise<void> {
@@ -26,5 +23,3 @@ class FirestoreLinksRepository implements LinksRepository {
     });
   }
 }
-
-module.exports = FirestoreLinksRepository;

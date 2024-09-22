@@ -4,7 +4,7 @@ import { App } from '@slack/bolt';
 
 const CHANNEL_ID = 'C07DL65JULV';
 
-class SlackMessagesRepository implements MessageRepository {
+export class SlackMessagesRepository implements MessageRepository {
   constructor(private readonly app: App) {}
   async fetchMessage(): Promise<LinkContent> {
     const result = await this.app.client.conversations.history({
@@ -26,5 +26,3 @@ class SlackMessagesRepository implements MessageRepository {
     };
   }
 }
-
-module.exports = SlackMessagesRepository;

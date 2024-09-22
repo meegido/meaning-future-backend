@@ -1,7 +1,7 @@
 import { SummaryRepository } from '../domain/SummaryRepository';
 import OpenAI from 'openai';
 
-class PerplexitySummaryRepository implements SummaryRepository {
+export class PerplexitySummaryRepository implements SummaryRepository {
   private client: OpenAI;
   constructor() {
     this.client = new OpenAI({
@@ -19,5 +19,3 @@ class PerplexitySummaryRepository implements SummaryRepository {
     return stream.choices[0].message.content!;
   }
 }
-
-module.exports = PerplexitySummaryRepository;

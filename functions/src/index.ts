@@ -1,14 +1,13 @@
-const { StoreLinkOnMessageShared } = require('./application/StoreDocumentOnSlackMessageChanged');
-const { FirestoreLinksRepository } = require('./infrastructure/FirestoreLinksRepository');
-const { SlackMessagesRepository } = require('./infrastructure/SlackMessagesRepository');
-const { PerplexitySummaryRepository } = require('./infrastructure/PerplexitySummaryRepository');
-
-const { initializeApp, cert } = require('firebase-admin/app');
-const serviceAccount = require('./serviceAccountKey.json');
-const { onRequest } = require('firebase-functions/v2/https');
-const Sentry = require('@sentry/node');
-const dotenv = require('dotenv');
-const { App, ExpressReceiver } = require('@slack/bolt');
+import { StoreLinkOnMessageShared } from './application/StoreDocumentOnSlackMessageChanged';
+import { FirestoreLinksRepository } from './infrastructure/FirestoreLinksRepository';
+import { SlackMessagesRepository } from './infrastructure/SlackMessagesRepository';
+import { PerplexitySummaryRepository } from './infrastructure/PerplexitySummaryRepository';
+import serviceAccount from './serviceAccountKey.json';
+import { cert, initializeApp, ServiceAccount } from 'firebase-admin/app';
+import { onRequest } from 'firebase-functions/v2/https';
+import dotenv from 'dotenv';
+import { App, ExpressReceiver } from '@slack/bolt';
+import { getFirestore } from 'firebase-admin/firestore';
 
 dotenv.config();
 
@@ -27,58 +26,11 @@ const app = new App({
 });
 
 initializeApp({
-  credential: cert(serviceAccount),
+  credential: cert(serviceAccount as ServiceAccount),
 });
 
-// const db = getFirestore();
-// db.settings({ ignoreUndefinedProperties: true });
-
-// const client = new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY,
-//   baseURL: "https://api.perplexity.ai",
-// });
-
-// async function askQuestion(url: string | undefined) {
-//   const stream = await client.chat.completions.create({
-//     model: "llama-3.1-sonar-large-128k-online",
-//     messages: [
-//       { role: "user", content: `Give me a summary of this website: ${url}` },
-//     ],
-//   });
-//
-//   return stream.choices[0].message.content!;
-// }
-
-// async function fetchMessage(): Promise<LinkContent> {
-//   const result = await app.client.conversations.history({
-//     token: process.env.SLACK_BOT_TOKEN,
-//     channel: CHANNEL_ID,
-//     inclusive: true,
-//     limit: 1,
-//   });
-//
-//   const attachment = result.messages?.[0].attachments?.[0];
-//   return {
-//     ...attachment,
-//     timestamp: Date.now(),
-//   };
-// }
-
-// const writeDocument = async (link: LinkContent) => {
-//   if (!link) return;
-//
-//   const document = db.collection("links").doc();
-//   await document.set({
-//     url: link.from_url,
-//     serviceIcon: link.service_icon,
-//     service: link.service_name,
-//     title: link.title,
-//     text: link.text,
-//     imageUrl: link.image_url,
-//     perplexitySummary: link.perplexitySummary,
-//     timestamp: link.timestamp,
-//   });
-// };
+const db = getFirestore();
+db.settings({ ignoreUndefinedProperties: true });
 
 const processedEvents = new Set<string>();
 
@@ -92,7 +44,7 @@ app.event('message', async ({ event }: SlackEventMiddlewareArgs<'message'>) => {
   console.log({ event });
   if (event.subtype === 'message_changed') {
     const action = new StoreLinkOnMessageShared(
-      new FirestoreLinksRepository(),
+      new FirestoreLinksRepository(db),
       new SlackMessagesRepository(app),
       new PerplexitySummaryRepository()
     );
@@ -100,7 +52,5 @@ app.event('message', async ({ event }: SlackEventMiddlewareArgs<'message'>) => {
     await action.execute();
   }
 });
-
-Sentry.setupExpressErrorHandler(expressReceiver.app);
 
 exports.slack = onRequest(expressReceiver.app);
