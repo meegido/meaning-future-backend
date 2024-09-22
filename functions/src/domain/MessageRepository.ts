@@ -1,6 +1,5 @@
-import {LinkContent} from "./types";
+import { LinkContent } from './types';
 
 export interface MessageRepository {
-    fetchMessage(): Promise<LinkContent>;
+  fetchMessage(): Promise<LinkContent>;
 }
-

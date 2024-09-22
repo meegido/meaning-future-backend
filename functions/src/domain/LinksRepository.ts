@@ -1,5 +1,5 @@
-import {LinkContent} from "./types";
+import { LinkContent } from './types';
 
 export interface LinksRepository {
-    saveLink(linkContent: LinkContent): Promise<void>;
+  saveLink(linkContent: LinkContent): Promise<void>;
 }

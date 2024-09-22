@@ -1,3 +1,3 @@
 export interface SummaryRepository {
-    fetchSummary(url: string): Promise<string>;
+  fetchSummary(url: string): Promise<string>;
 }
