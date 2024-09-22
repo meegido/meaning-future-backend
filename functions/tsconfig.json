@@ -10,11 +10,10 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": true
   },
   "compileOnSave": true,
-  "include": [
-    "src"
-  ],
-  "exclude": ["node_modules", "lib"],
+  "include": ["src"],
+  "files": ["src/serviceAccountKey.json"],
+  "exclude": ["node_modules", "lib"]
 }
