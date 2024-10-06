@@ -1,9 +1,9 @@
 import { describe, it, beforeEach, expect, vi } from "vitest";
-import { FirestoreLinksRepository } from '../../src/infrastructure/FirestoreLinksRepository';
-import { LinkContent } from '../../src/domain/types';
-import * as admin from 'firebase-admin';
+import { FirestoreLinksRepository } from "../../src/infrastructure/FirestoreLinksRepository";
+import { LinkContent } from "../../src/domain/types";
+import * as admin from "firebase-admin";
 
-vi.mock('firebase-admin', () => {
+vi.mock("firebase-admin", () => {
   const firestore = {
     collection: vi.fn().mockReturnThis(),
     doc: vi.fn().mockReturnThis(),
@@ -15,7 +15,7 @@ vi.mock('firebase-admin', () => {
   };
 });
 
-describe('FirestoreLinksRepository', () => {
+describe("FirestoreLinksRepository", () => {
   let db: FirebaseFirestore.Firestore;
   let repository: FirestoreLinksRepository;
 
@@ -24,19 +24,19 @@ describe('FirestoreLinksRepository', () => {
     repository = new FirestoreLinksRepository(db);
   });
 
-  it('saves a valid link content to Firestore', async () => {
+  it("saves a valid link content to Firestore", async () => {
     const linkContent: LinkContent = {
-      from_url: 'https://example.com',
-      service_icon: 'icon.png',
-      service_name: 'Example Service',
-      title: 'Example Title',
-      text: 'Example Text',
-      image_url: 'https://example.com/image.png',
-      perplexitySummary: 'Example Summary',
+      from_url: "https://example.com",
+      service_icon: "icon.png",
+      service_name: "Example Service",
+      title: "Example Title",
+      text: "Example Text",
+      image_url: "https://example.com/image.png",
+      perplexitySummary: "Example Summary",
       timestamp: Date.now(),
     };
 
-    const setSpy = vi.spyOn(db.collection('links').doc(), 'set');
+    const setSpy = vi.spyOn(db.collection("links").doc(), "set");
 
     await repository.saveLink(linkContent);
 
@@ -52,16 +52,16 @@ describe('FirestoreLinksRepository', () => {
     });
   });
 
-  it('does not save when link content is null', async () => {
-    const setSpy = vi.spyOn(db.collection('links').doc(), 'set');
+  it("does not save when link content is null", async () => {
+    const setSpy = vi.spyOn(db.collection("links").doc(), "set");
 
     await repository.saveLink(null);
 
     expect(setSpy).not.toHaveBeenCalled();
   });
 
-  it('does not save when link content is undefined', async () => {
-    const setSpy = vi.spyOn(db.collection('links').doc(), 'set');
+  it("does not save when link content is undefined", async () => {
+    const setSpy = vi.spyOn(db.collection("links").doc(), "set");
 
     await repository.saveLink(undefined);
 

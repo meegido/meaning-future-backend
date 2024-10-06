@@ -8,6 +8,7 @@ import { onRequest } from 'firebase-functions/v2/https';
 import dotenv from 'dotenv';
 import { App, ExpressReceiver } from '@slack/bolt';
 import { getFirestore } from 'firebase-admin/firestore';
+import OpenAI from "openai";
 
 dotenv.config();
 
@@ -32,6 +33,11 @@ initializeApp({
 const db = getFirestore();
 db.settings({ ignoreUndefinedProperties: true });
 
+const openAI = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      baseURL: 'https://api.perplexity.ai',
+    })
+
 const processedEvents = new Set<string>();
 
 // @ts-expect-error unknown function
@@ -46,7 +52,7 @@ app.event('message', async ({ event }: SlackEventMiddlewareArgs<'message'>) => {
     const action = new StoreLinkOnMessageShared(
       new FirestoreLinksRepository(db),
       new SlackMessagesRepository(app),
-      new PerplexitySummaryRepository()
+      new PerplexitySummaryRepository(openAI)
     );
 
     await action.execute();
