@@ -2,7 +2,14 @@ import { StoreLinkOnMessageShared } from './application/StoreDocumentOnSlackMess
 import { FirestoreLinksRepository } from './infrastructure/FirestoreLinksRepository';
 import { SlackMessagesRepository } from './infrastructure/SlackMessagesRepository';
 import { PerplexitySummaryRepository } from './infrastructure/PerplexitySummaryRepository';
-import serviceAccount from './serviceAccountKey.json';
+let serviceAccount: ServiceAccount;
+try {
+  serviceAccount = require('./serviceAccountKey.json');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+} catch (error) {
+  console.error('Service account key not found');
+  serviceAccount = {};
+}
 import { cert, initializeApp, ServiceAccount } from 'firebase-admin/app';
 import { onRequest } from 'firebase-functions/v2/https';
 import dotenv from 'dotenv';
