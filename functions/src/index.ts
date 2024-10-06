@@ -8,7 +8,7 @@ import { onRequest } from 'firebase-functions/v2/https';
 import dotenv from 'dotenv';
 import { App, ExpressReceiver } from '@slack/bolt';
 import { getFirestore } from 'firebase-admin/firestore';
-import OpenAI from "openai";
+import OpenAI from 'openai';
 
 dotenv.config();
 
@@ -34,9 +34,9 @@ const db = getFirestore();
 db.settings({ ignoreUndefinedProperties: true });
 
 const openAI = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-      baseURL: 'https://api.perplexity.ai',
-    })
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: 'https://api.perplexity.ai',
+});
 
 const processedEvents = new Set<string>();
 

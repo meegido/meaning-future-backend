@@ -14,7 +14,9 @@ describe("PerplexitySummaryRepository", () => {
       },
     };
 
-    const repository = new PerplexitySummaryRepository(mockClient as unknown as OpenAI);
+    const repository = new PerplexitySummaryRepository(
+      mockClient as unknown as OpenAI,
+    );
     const summary = await repository.fetchSummary("http://example.com");
 
     expect(summary).toBe("Summary of the website");
@@ -31,7 +33,9 @@ describe("PerplexitySummaryRepository", () => {
       },
     };
 
-    const repository = new PerplexitySummaryRepository(mockClient as unknown as OpenAI);
+    const repository = new PerplexitySummaryRepository(
+      mockClient as unknown as OpenAI,
+    );
     const summary = await repository.fetchSummary("http://example.com");
 
     expect(summary).toBe("");
