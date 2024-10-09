@@ -1,9 +1,6 @@
 name: Run CI
 run-name: ${{ github.actor }} is running GitHub Actions 🚀
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
