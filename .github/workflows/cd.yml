@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+env:
+  SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+
 jobs:
   cd:
     runs-on: ubuntu-latest
