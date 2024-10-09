@@ -43,6 +43,8 @@ jobs:
 
       - name : Install Firebase CLI
         run: npm install -g firebase-tools
+      - name: Print environment variables
+        run: env
 
       - name: Deploy to Firebase
         env:
