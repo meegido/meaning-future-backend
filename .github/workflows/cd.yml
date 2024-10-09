@@ -6,7 +6,9 @@ on:
       - main
 env:
   SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-
+  SLACK_APP_TOKEN: ${{ secrets.SLACK_APP_TOKEN }}
+  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+  SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
 jobs:
   cd:
     runs-on: ubuntu-latest
