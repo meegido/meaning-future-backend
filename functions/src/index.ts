@@ -2,14 +2,6 @@ import { StoreLinkOnMessageShared } from './application/StoreDocumentOnSlackMess
 import { FirestoreLinksRepository } from './infrastructure/FirestoreLinksRepository';
 import { SlackMessagesRepository } from './infrastructure/SlackMessagesRepository';
 import { PerplexitySummaryRepository } from './infrastructure/PerplexitySummaryRepository';
-let serviceAccount: ServiceAccount;
-try {
-  serviceAccount = require('./serviceAccountKey.json');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-} catch (error) {
-  console.error('Service account key not found');
-  serviceAccount = {};
-}
 import { cert, initializeApp, ServiceAccount } from 'firebase-admin/app';
 import { onRequest } from 'firebase-functions/v2/https';
 import dotenv from 'dotenv';
@@ -33,6 +25,8 @@ const app = new App({
   port: 8080,
 });
 
+const encodedServiceAccount = process.env.SERVICE_ACCOUNT_KEY || '';
+const serviceAccount = JSON.parse(Buffer.from(encodedServiceAccount, 'base64').toString('utf-8'));
 initializeApp({
   credential: cert(serviceAccount as ServiceAccount),
 });
