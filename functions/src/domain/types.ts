@@ -7,4 +7,5 @@ export interface LinkContent {
   image_url: string;
   perplexitySummary?: string;
   timestamp: number;
+  userName?: string;
 }

@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 import { App, ExpressReceiver } from '@slack/bolt';
 import { getFirestore } from 'firebase-admin/firestore';
 import OpenAI from 'openai';
+import { SlackUsersRepository } from './infrastructure/SlackUsersRepository';
 
 dotenv.config();
 
@@ -53,10 +54,11 @@ app.event('message', async ({ event }: SlackEventMiddlewareArgs<'message'>) => {
     const action = new StoreLinkOnMessageShared(
       new FirestoreLinksRepository(db),
       new SlackMessagesRepository(app),
-      new PerplexitySummaryRepository(openAI)
+      new PerplexitySummaryRepository(openAI),
+      new SlackUsersRepository(app)
     );
 
-    await action.execute();
+    await action.execute(event.message.user);
   }
 });
 

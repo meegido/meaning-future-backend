@@ -20,6 +20,7 @@ export class FirestoreLinksRepository implements LinksRepository {
       imageUrl: linkContent.image_url,
       perplexitySummary: linkContent.perplexitySummary,
       timestamp: linkContent.timestamp,
+      userName: linkContent.userName,
     });
   }
 }

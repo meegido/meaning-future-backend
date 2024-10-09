@@ -34,6 +34,7 @@ describe("FirestoreLinksRepository", () => {
       image_url: "https://example.com/image.png",
       perplexitySummary: "Example Summary",
       timestamp: Date.now(),
+      userName: "laponyo",
     };
 
     const setSpy = vi.spyOn(db.collection("links").doc(), "set");
@@ -49,6 +50,7 @@ describe("FirestoreLinksRepository", () => {
       imageUrl: linkContent.image_url,
       perplexitySummary: linkContent.perplexitySummary,
       timestamp: linkContent.timestamp,
+      userName: linkContent.userName,
     });
   });
 
