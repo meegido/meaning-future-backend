@@ -1,0 +1,42 @@
+name: Run CD
+run-name: ${{ github.actor }} is running GitHub Actions 🚀
+on:
+  push:
+    branches:
+      - main
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: functions
+
+      - name: Lint code
+        run: npm run lint
+        working-directory: functions
+
+      - name: Format code
+        run: npm run format
+        working-directory: functions
+
+      - name: Build project
+        run: npm run build
+        working-directory: functions
+
+      - name: Run tests
+        run: npm test
+        working-directory: functions
+
+      - name: Deploy to Firebase
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: firebase deploy --only functions
