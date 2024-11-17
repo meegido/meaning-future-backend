@@ -49,11 +49,12 @@ app.event('message', async ({ event }: SlackEventMiddlewareArgs<'message'>) => {
   }
   processedEvents.add(event.event_ts);
 
-  console.log({ event });
-  if (event.subtype === 'message_changed') {
+  const slackMessagesRepository = new SlackMessagesRepository(app);
+  if (event.subtype === 'message_changed' && event.channel === slackMessagesRepository.CHANNEL_ID) {
+    console.log({ event });
     const action = new StoreLinkOnMessageShared(
       new FirestoreLinksRepository(db),
-      new SlackMessagesRepository(app),
+      slackMessagesRepository,
       new PerplexitySummaryRepository(openAI),
       new SlackUsersRepository(app)
     );

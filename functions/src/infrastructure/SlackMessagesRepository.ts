@@ -2,14 +2,13 @@ import { MessageRepository } from '../domain/MessageRepository';
 import { LinkContent } from '../domain/types';
 import { App } from '@slack/bolt';
 
-const CHANNEL_ID = 'C07DL65JULV';
-
 export class SlackMessagesRepository implements MessageRepository {
+  CHANNEL_ID = 'C07DL65JULV';
   constructor(private readonly app: App) {}
   async fetchMessage(): Promise<LinkContent> {
     const result = await this.app.client.conversations.history({
       token: process.env.SLACK_BOT_TOKEN,
-      channel: CHANNEL_ID,
+      channel: this.CHANNEL_ID,
       inclusive: true,
       limit: 1,
     });
